@@ -1,22 +1,23 @@
-#Changing directory
-import os
-os.chdir('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime\\Original - Copy')
-os.getcwd()
-
 #####  Libraries ##### 
 import pandas as pd     # PANDAS
 import numpy as np      # NUMPY
-import re               # REGULAR EXPRESSIONS
+import re               # REGULAR EXPRESSIONS 
 
 ##Reading data 
 #Reading 2016,2017,2018,2019 & 2017 cybercrime motives data.
-d_2016=pd.read_csv('2016(Motives).csv')
-d_2017=pd.read_csv('2017(Motives).csv')
-d_2018=pd.read_csv('2018(Motives).csv')
-d_2019=pd.read_csv('2019(Motives).csv')
-d_2020=pd.read_csv('2020(Motives).csv')
+d_2016=pd.read_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\2016(Motives).csv')
+d_2017=pd.read_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\2017(Motives).csv')
+d_2018=pd.read_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\2018(Motives).csv')
+d_2019=pd.read_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\2019(Motives).csv')
+d_2020=pd.read_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\2020(Motives).csv')
 
 #Removing Total states and Total UT's row, Sorting and reindexing for further analysis
+
+################################################---2020---######################################################
+#Deleting total states and total UT rows.
+d_2020.iloc[38,0] = 'Grand Total(All India)'
+d_2020.iloc[38,1] = 'Grand Total(All India)'
+d_2020.iloc[38,2] = 'Grand Total(All India)'
 
 I = d_2020.index[(d_2020['State/UT (Col. 2)']=='Total State(s)') | (d_2020['State/UT (Col. 2)']=='Total UT(s)')].tolist()
 print(I)
@@ -24,139 +25,213 @@ d_2020=d_2020.drop(I[0],axis=0)
 d_2020=d_2020.drop(I[1],axis=0)
 d_2020 = d_2020.sort_values('State/UT (Col. 2)')
 d_2020.reset_index(drop=True, inplace=True)
-a = d_2020.index[d_2020['State/UT (Col. 2)'].str.contains('Total[a-z]*',regex=True)].tolist()
-b = d_2020.index[d_2020['State/UT (Col. 2)'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
-print(a)
-print(b)
-a1 = d_2020.iloc[b[0],:]
-d_2020.iloc[b[0],:] = d_2020.iloc[a[0],:]
-d_2020.iloc[a[0],:] = a1
+
+#Sorting data
+d_2020 = d_2020.sort_values(['Category ','State/UT (Col. 2)'])
 d_2020.reset_index(drop=True, inplace=True)
+
 d_2020.to_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\d_2020.csv')
 
 
+################################################---2019---######################################################
 
+#Deleting total states and total UT rows.
+d_2019.iloc[9,0] = 'UT'
 I1 = d_2019.index[(d_2019['State/UT']=='TOTAL STATE(S)') | (d_2019['State/UT']=='TOTAL UT(S)')].tolist()
 print(I1)
 d_2019=d_2019.drop(I1[0],axis=0)
 d_2019=d_2019.drop(I1[1],axis=0)
-d_2019 = d_2019.sort_values('State/UT')
-d_2019.reset_index(drop=True, inplace=True)
-a = d_2019.index[d_2019['State/UT'].str.contains('TOTAL[a-z]*', regex=True)].tolist()
-b = d_2019.index[d_2019['State/UT'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
-print(a)
-print(b)
-a1 = d_2019.iloc[b[0],:]
-d_2019.iloc[b[0],:] = d_2019.iloc[a[0],:]
-d_2019.iloc[a[0],:] = a1
 d_2019.reset_index(drop=True, inplace=True)
 
-#Adding ladakh
+# Combining (Daman & Diu) and (Dadar & Nagar Haveli).
+a2=a2=d_2019.index[(d_2019['State/UT'].str.contains('D & N Haveli[a-z]*', regex=True)) | (d_2019['State/UT'].str.contains('Daman & Diu[a-z]*', regex=True))].tolist()
+print(a2)
+a = d_2019.iloc[a2[0],:] + d_2019.iloc[a2[1],:]
+d_2019.iloc[a2[0],:] = a
+d_2019 = d_2019.drop(a2[1])
+d_2019.reset_index(drop=True, inplace=True)
+a1 = d_2019.index[(d_2019['Category']=='UTUT')].tolist()        ##Replaces 'UTUT' with 'UT'
+print(a1)
+d_2019.iloc[a1[0] ,0] = 'UT'
+
+#Adding ladakh.
 d=[0]*(len(d_2019.columns)-2)
 a=['UT','Ladakh']
 print(a)
 print(d)
 for i in range(0,len(d)):
     a.append(d[i])
-    
+
 a = pd.DataFrame(a )
 a = a.transpose()
-
-print(len(d_2019.columns)) 
-print(len(a.columns))
-
 a.columns = d_2019.columns
 d_2019 = d_2019.append(a)
+
+#Sorting data
+d_2019 = d_2019.sort_values(['Category','State/UT'])
+d_2019.reset_index(drop=True, inplace=True)
+
+#Swapping Rows.
+a = d_2019.index[d_2019['State/UT'].str.contains('TOTAL[a-z]*', regex=True)].tolist()
+b = d_2019.index[d_2019['State/UT'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
+
+#Saving updated file.
 d_2019.to_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\d_2019.csv')
 
+################################################---2018---######################################################
 
-
-I2 = d_2018.index[(d_2018['State/UT']=='Total State(s)') | (d_2018['State/UT']=='Total UT(s)')].tolist()
-print(I2)
-d_2018=d_2018.drop(I2[0],axis=0)
-d_2018=d_2018.drop(I2[1],axis=0)
+#Deleting total states and total UT rows.
+d_2018 = d_2018.drop(39)   #Drops the NaN row
+d_2018.iloc[9,1] = 'Union Territory'
+d_2018.iloc[38,0] = 'Grand Total(All India)'
+d_2018.iloc[38,1] = 'Grand Total(All India)'
+d_2018.iloc[38,2] = 'Grand Total(All India)'
+I3 = d_2018.index[(d_2018['State/UT']=='Total State(s)') | (d_2018['State/UT']=='Total UT(s)')].tolist()
+print(I3)
+d_2018=d_2018.drop(I3[0],axis=0)
+d_2018=d_2018.drop(I3[1],axis=0)
 d_2018=d_2018.sort_values('State/UT')
 d_2018.reset_index(drop=True, inplace=True)
-d_2018 = d_2018.drop(37)   #Drops the NaN row
-a = d_2018.index[d_2018['State/UT'].str.contains('Total[a-z]*',regex=True)].tolist()
-b = d_2018.index[d_2018['State/UT'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
-print(a)
-print(b)
-a1 = d_2018.iloc[b[0],:]
-d_2018.iloc[b[0],:] = d_2018.iloc[a[0],:]
-d_2018.iloc[a[0],:] = a1
-d_2018.reset_index(drop=True, inplace=True)
 
-#Adding ladakh
-d=[0]*(len(d_2018.columns)-3)
-a=['-','UT','Ladakh']
+# Combining (Daman & Diu) and (Dadar & Nagar Haveli).
+a2=d_2018.index[(d_2018['State/UT'].str.contains('D&N Haveli[a-z]*', regex=True)) | (d_2018['State/UT'].str.contains('Daman & Diu[a-z]*', regex=True))].tolist()
+print(a2)
+a = d_2018.iloc[a2[0],:] + d_2018.iloc[a2[1],:]
+d_2018.iloc[a2[0],:] = a
+d_2018 = d_2018.drop(a2[1])
+d_2018.reset_index(drop=True, inplace=True)
+a1 = d_2018.index[(d_2018['Category']=='Union TerritoryUnion Territory')].tolist()        ##Replaces 'UTUT' with 'UT'
+print(a1)
+d_2018.iloc[a1[0] ,1] = 'Union Territory'
+
+#Adding ladakh.
+d=[0]*(len(d_2017.columns)-3)
+a=['-','Union Territory','Ladakh']
 print(a)
 print(d)
 for i in range(0,len(d)):
     a.append(d[i])
-    
+
 a = pd.DataFrame(a )
 a = a.transpose()
 a.columns = d_2018.columns
 d_2018 = d_2018.append(a)
+
+#Sorting data
+d_2018 = d_2018.sort_values(['Category','State/UT'])
+d_2018.reset_index(drop=True, inplace=True)
+
+#Swapping Rows.
+a = d_2018.index[d_2018['State/UT'].str.contains('Total[a-z]*', regex=True)].tolist()
+b = d_2018.index[d_2018['State/UT'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
+
 d_2018.to_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\d_2018.csv')
 
 
+################################################---2017---######################################################
+
+#Deleting total states and total UT rows.
+d_2017.iloc[9,1] = 'Union Territory'
+d_2017.iloc[38,0] = 'Grand Total(All India)'
+d_2017.iloc[38,1] = 'Grand Total(All India)'
+d_2017.iloc[38,2] = 'Grand Total(All India)'
 I3 = d_2017.index[(d_2017['State/UT (Col.3)']=='Total State(s)') | (d_2017['State/UT (Col.3)']=='Total UT(s)')].tolist()
 print(I3)
 d_2017=d_2017.drop(I3[0],axis=0)
 d_2017=d_2017.drop(I3[1],axis=0)
 d_2017=d_2017.sort_values('State/UT (Col.3)')
 d_2017.reset_index(drop=True, inplace=True)
-a = d_2017.index[d_2017['State/UT (Col.3)'].str.contains('Total[a-z]*',regex=True)].tolist()
-b = d_2017.index[d_2017['State/UT (Col.3)'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
-print(a)
-print(b)
-a1 = d_2017.iloc[b[0],:]
-d_2017.iloc[b[0],:] = d_2017.iloc[a[0],:]
-d_2017.iloc[a[0],:] = a1
+
+# Combining (Daman & Diu) and (Dadar & Nagar Haveli).
+a2=d_2017.index[(d_2017['State/UT (Col.3)'].str.contains('D&N Haveli[a-z]*', regex=True)) | (d_2017['State/UT (Col.3)'].str.contains('Daman & Diu[a-z]*', regex=True))].tolist()
+print(a2)
+a = d_2017.iloc[a2[0],:] + d_2017.iloc[a2[1],:]
+d_2017.iloc[a2[0],:] = a
+d_2017 = d_2017.drop(a2[1])
 d_2017.reset_index(drop=True, inplace=True)
-#Adding ladakh
+a1 = d_2017.index[(d_2017['Category (Col.2)']=='Union TerritoryUnion Territory')].tolist()        ##Replaces 'UTUT' with 'UT'
+print(a1)
+d_2017.iloc[a1[0] ,1] = 'Union Territory'
+
+#Adding ladakh.
 d=[0]*(len(d_2017.columns)-3)
-a=['-','UT','Ladakh']
+a=['-','Union Territory','Ladakh']
 print(a)
 print(d)
 for i in range(0,len(d)):
     a.append(d[i])
-    
+
 a = pd.DataFrame(a )
 a = a.transpose()
 a.columns = d_2017.columns
 d_2017 = d_2017.append(a)
+
+
+
+#Sorting data
+d_2017 = d_2017.sort_values(['Category (Col.2)','State/UT (Col.3)'])
+d_2017.reset_index(drop=True, inplace=True)
+
+#Swapping Rows.
+a = d_2017.index[d_2017['State/UT (Col.3)'].str.contains('Total[a-z]*', regex=True)].tolist()
+b = d_2017.index[d_2017['State/UT (Col.3)'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
+
 d_2017.to_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\d_2017.csv')
 
+
+###################################################---2016---####################################################
+
+#Deleting total states and total UT rows.
+d_2016.iloc[9,1] = 'UT'
+d_2016.iloc[38,0] = 'Grand Total(All India)'
+d_2016.iloc[38,1] = 'Grand Total(All India)'
+d_2016.iloc[38,2] = 'Grand Total(All India)'
 I4 = d_2016.index[(d_2016['State/UT (Col.3)']=='Total (States)') | (d_2016['State/UT (Col.3)']=='Total (UTs)')].tolist()
 print(I4)
 d_2016=d_2016.drop(I4[0],axis=0)
 d_2016=d_2016.drop(I4[1],axis=0)
 d_2016=d_2016.sort_values('State/UT (Col.3)')
 d_2016.reset_index(drop=True, inplace=True)
-a = d_2016.index[d_2016['State/UT (Col.3)'].str.contains('Total[a-z]*',regex=True)].tolist()
-b = d_2016.index[d_2016['State/UT (Col.3)'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
-print(a)
-print(b)
-a1 = d_2016.iloc[b[0],:]
-d_2016.iloc[b[0],:] = d_2016.iloc[a[0],:]
-d_2016.iloc[a[0],:] = a1
-d_2016.reset_index(drop=True, inplace=True)
 
-#Adding ladakh 
+# Combining (Daman & Diu) and (Dadar & Nagar Haveli).
+a2=d_2016.index[(d_2016['State/UT (Col.3)'].str.contains('D&N Haveli[a-z]*', regex=True)) | (d_2016['State/UT (Col.3)'].str.contains('Daman & Diu[a-z]*', regex=True))].tolist()
+print(a2)
+a = d_2016.iloc[a2[0],:] + d_2016.iloc[a2[1],:]
+d_2016.iloc[a2[0],:] = a
+d_2016 = d_2016.drop(a2[1])
+d_2016.reset_index(drop=True, inplace=True)
+a1 = d_2016.index[(d_2016['Category (Col.2)']=='UTUT')].tolist()        ##Replaces 'UTUT' with 'UT'
+print(a1)
+d_2016.iloc[a1[0] ,1] = 'UT'
+
+#Adding ladakh.
 d=[0]*(len(d_2016.columns)-3)
 a=['-','UT','Ladakh']
-
+print(a)
+print(d)
 for i in range(0,len(d)):
     a.append(d[i])
 
-a = pd.DataFrame(a)
+a = pd.DataFrame(a )
 a = a.transpose()
 a.columns = d_2016.columns
 d_2016 = d_2016.append(a)
+
+
+
+#Sorting data
+d_2016 = d_2016.sort_values(['Category (Col.2)','State/UT (Col.3)'])
+d_2016.reset_index(drop=True, inplace=True)
+
+#Swapping Rows.
+a = d_2016.index[d_2016['State/UT (Col.3)'].str.contains('Total[a-z]*', regex=True)].tolist()
+b = d_2016.index[d_2016['State/UT (Col.3)'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
+
 d_2016.to_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\d_2016.csv')
+
+
+
+
 
 #Syntax for column names ---> df.columns where df is your dataframe.
 #'Total' Columns/Cplumn for states/UT and overall India.
@@ -171,7 +246,6 @@ T_2019.columns=['states/ut','total']
 T_2020=d_2020[['State/UT (Col. 2)','Total - (Col. 24)']]
 T_2020.columns=['states/ut','total']
 
-#T_India = 
 
 #To check that sequence of states/ut in 'states/ut' column is same
 a=[]
@@ -187,101 +261,8 @@ pd.DataFrame(a)
 
     
 
-d_2016
-
-I1 = d_2019.index[(d_2019['State/UT']=='TOTAL STATE(S)') | (d_2019['State/UT']=='TOTAL UT(S)')].tolist()
-print(I1)
-d_2019=d_2019.drop(I1[0],axis=0)
-d_2019=d_2019.drop(I1[1],axis=0)
-d_2019 = d_2019.sort_values('State/UT')
-d_2019.reset_index(drop=True, inplace=True)
-a = d_2019.index[d_2019['State/UT'].str.contains('TOTAL[a-z]*', regex=True)].tolist()
-b = d_2019.index[d_2019['State/UT'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
-print(a)
-print(b)
-a1 = d_2019.iloc[b[0],:]
-d_2019.iloc[b[0],:] = d_2019.iloc[a[0],:]
-d_2019.iloc[a[0],:] = a1
-d_2019.reset_index(drop=True, inplace=True)
-
-#Adding ladakh
-d=[0]*(len(d_2019.columns)-2)
-a=['UT','Ladakh']
-print(a)
-print(d)
-for i in range(0,len(d)):
-    a.append(d[i])
-    
-a = pd.DataFrame(a )
-a = a.transpose()
-
-print(len(d_2019.columns)) 
-print(len(a.columns))
-
-a.columns = d_2019.columns
-d_2019 = d_2019.append(a)
-
-#################---2019---#######################
-
-#Deleting total states and total UT rows.
-I1 = d_2019.index[(d_2019['State/UT']=='TOTAL STATE(S)') | (d_2019['State/UT']=='TOTAL UT(S)')].tolist()
-print(I1)
-d_2019=d_2019.drop(I1[0],axis=0)
-d_2019=d_2019.drop(I1[1],axis=0)
-d_2019.reset_index(drop=True, inplace=True)
-
-# Combining (Daman & Diu) and (Dadar & Nagar Haveli).
-a = d_2019.iloc[31,:] + d_2019.iloc[32,:]
-d_2019.iloc[31,:] = a
-d_2019 = d_2019.drop(32)
-d_2019.reset_index(drop=True, inplace=True)
-a1 = d_2019.index[(d_2019['Category']=='UTUT')].tolist()
-print(a1)
-d_2019.iloc[a1[0] ,0] = 'UT'
-
-#Adding ladakh.
-d=[0]*(len(d_2019.columns)-2)
-a=['UT','Ladakh']
-print(a)
-print(d)
-for i in range(0,len(d)):
-    a.append(d[i])
-    
-a = pd.DataFrame(a )
-a = a.transpose()
-a.columns = d_2019.columns
-d_2019 = d_2019.append(a)
-
-#Sorting data
-d_2019 = d_2019.sort_values(['Category','State/UT'])
-d_2019.reset_index(drop=True, inplace=True)
-
-#Swapping Rows.
-a = d_2019.index[d_2019['State/UT'].str.contains('TOTAL[a-z]*', regex=True)].tolist()
-b = d_2019.index[d_2019['State/UT'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
-
-d_2019
 
 
 
 
 
-d_2019.columns
-
-#Deleting total states and total UT rows.
-I1 = d_2019.index[(d_2019['State/UT']=='TOTAL STATE(S)') | (d_2019['State/UT']=='TOTAL UT(S)')].tolist()
-print(I1)
-d_2019=d_2019.drop(I1[0],axis=0)
-d_2019=d_2019.drop(I1[1],axis=0)
-d_2019.reset_index(drop=True, inplace=True)
-
-# Combining (Daman & Diu) and (Dadar & Nagar Haveli).
-a = d_2019.iloc[31,:] + d_2019.iloc[32,:]
-d_2019.iloc[31,:] = a
-d_2019 = d_2019.drop(32)
-d_2019.reset_index(drop=True, inplace=True)
-a1 = d_2019.index[(d_2019['Category']=='UTUT')].tolist()
-print(a1)
-d_2019.iloc[a1[0] ,0] = 'UT'
-
-d_2019
