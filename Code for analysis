@@ -314,7 +314,7 @@ Extortion = pd.DataFrame(d_2016.iloc[:,5] + d_2017.iloc[:,5]  + d_2018.iloc[:,5]
 a=(d_2016.iloc[:,1]).tolist()
 Extortion.insert(0,'States',a,True)
 print(Extortion)
-Extortion.to_csv('Personal Revenge 2016-2020.csv')
+Extortion.to_csv('Extortion 2016-2020.csv')
 
 
 
