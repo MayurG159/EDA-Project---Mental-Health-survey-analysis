@@ -282,11 +282,39 @@ plt.plot(x,y)
 plt.show()
 
 
+d_2020
 
+## Fraud in 2020(Statewise))
+fraud = pd.DataFrame(d_2020.iloc[:,4])
+a=(d_2016.iloc[:,1]).tolist()
+fraud.insert(0,'States',a,True)
+fraud
+fraud.to_csv('Fraud-2020.csv')
 
+#Total Fraud from 2016 to 2020
+fraud = pd.DataFrame(d_2016.iloc[:,2] + d_2017.iloc[:,4]  + d_2018.iloc[:,4] + d_2019.iloc[:,4] + d_2020.iloc[:,4])
+a=(d_2016.iloc[:,1]).tolist()
+fraud.insert(0,'States',a,True)
+print(fraud)
+fraud.to_csv('Fraud total(2016-2020).csv')
 
+Sexual_Explt = pd.DataFrame(d_2016.iloc[:,6] + d_2017.iloc[:,8]  + d_2018.iloc[:,8] + d_2019.iloc[:,8] + d_2020.iloc[:,8])
+a=(d_2016.iloc[:,1]).tolist()
+Sexual_Explt.insert(0,'States',a,True)
+print(Sexual_Explt)
+Sexual_Explt.to_csv('Sexual Exploitation 2016-2020.csv')
 
+Personal_Revenge = pd.DataFrame(d_2016.iloc[:,3] + d_2017.iloc[:,2]  + d_2018.iloc[:,2] + d_2019.iloc[:,2] + d_2020.iloc[:,2])
+a=(d_2016.iloc[:,1]).tolist()
+Personal_Revenge.insert(0,'States',a,True)
+print(Personal_Revenge)
+Personal_Revenge.to_csv('Personal Revenge 2016-2020.csv')
 
+Extortion = pd.DataFrame(d_2016.iloc[:,5] + d_2017.iloc[:,5]  + d_2018.iloc[:,5] + d_2019.iloc[:,5] + d_2020.iloc[:,3])
+a=(d_2016.iloc[:,1]).tolist()
+Extortion.insert(0,'States',a,True)
+print(Extortion)
+Extortion.to_csv('Personal Revenge 2016-2020.csv')
 
 
 
