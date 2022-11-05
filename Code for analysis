@@ -1,47 +1,60 @@
+#Changing directory
+import os
+os.chdir('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime\\Original - Copy')
+os.getcwd()
+
 #####  Libraries ##### 
 import pandas as pd     # PANDAS
 import numpy as np      # NUMPY
-import re               # REGULAR EXPRESSIONS 
+import re               # REGULAR EXPRESSIONS
+import matplotlib.pyplot  as plt #For plotting
 
-##Reading data 
 #Reading 2016,2017,2018,2019 & 2017 cybercrime motives data.
-d_2016=pd.read_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\2016(Motives).csv')
-d_2017=pd.read_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\2017(Motives).csv')
-d_2018=pd.read_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\2018(Motives).csv')
-d_2019=pd.read_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\2019(Motives).csv')
-d_2020=pd.read_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\2020(Motives).csv')
+d_2016=pd.read_csv('2016(Motives).csv')
+d_2017=pd.read_csv('2017(Motives).csv')
+d_2018=pd.read_csv('2018(Motives).csv')
+d_2019=pd.read_csv('2019(Motives).csv')
+d_2020=pd.read_csv('2020(Motives).csv')
 
 #Removing Total states and Total UT's row, Sorting and reindexing for further analysis
 
 ################################################---2020---######################################################
-#Deleting total states and total UT rows.
-d_2020.iloc[38,0] = 'Grand Total(All India)'
-d_2020.iloc[38,1] = 'Grand Total(All India)'
-d_2020.iloc[38,2] = 'Grand Total(All India)'
 
-I = d_2020.index[(d_2020['State/UT (Col. 2)']=='Total State(s)') | (d_2020['State/UT (Col. 2)']=='Total UT(s)')].tolist()
-print(I)
-d_2020=d_2020.drop(I[0],axis=0)
-d_2020=d_2020.drop(I[1],axis=0)
-d_2020 = d_2020.sort_values('State/UT (Col. 2)')
+#Deleting total states and total UT rows.
+d_2020 = d_2020.drop(28)
+d_2020 = d_2020.drop(37)
+d_2020 = d_2020.drop(38)
 d_2020.reset_index(drop=True, inplace=True)
+
+
+#Summary Statistics
+ss_2020 = (d_2020.describe())
 
 #Sorting data
 d_2020 = d_2020.sort_values(['Category ','State/UT (Col. 2)'])
 d_2020.reset_index(drop=True, inplace=True)
+d_2020 = d_2020.drop(['Si. No (Col. 1)'],axis=1)
 
-d_2020.to_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\d_2020.csv')
+## Extraction of Column for Total cybercrimes state wise 
+d_2020_T = pd.DataFrame(d_2020.iloc[:,23])   
+a=(d_2020.iloc[:,1]).tolist()
+d_2020_T.insert(0,'States',a,True)
+
+
+d_2020.to_csv('d_2020.csv')
 
 
 ################################################---2019---######################################################
+d_2019.iloc[9,0] = 'UT'
 
 #Deleting total states and total UT rows.
-d_2019.iloc[9,0] = 'UT'
-I1 = d_2019.index[(d_2019['State/UT']=='TOTAL STATE(S)') | (d_2019['State/UT']=='TOTAL UT(S)')].tolist()
-print(I1)
-d_2019=d_2019.drop(I1[0],axis=0)
-d_2019=d_2019.drop(I1[1],axis=0)
+d_2019 = d_2019.drop(29)
+d_2019 = d_2019.drop(37)
+d_2019 = d_2019.drop(38)
 d_2019.reset_index(drop=True, inplace=True)
+
+#Summary Statistics.
+ss_2019 = (d_2019.describe())
 
 # Combining (Daman & Diu) and (Dadar & Nagar Haveli).
 a2=a2=d_2019.index[(d_2019['State/UT'].str.contains('D & N Haveli[a-z]*', regex=True)) | (d_2019['State/UT'].str.contains('Daman & Diu[a-z]*', regex=True))].tolist()
@@ -71,27 +84,28 @@ d_2019 = d_2019.append(a)
 d_2019 = d_2019.sort_values(['Category','State/UT'])
 d_2019.reset_index(drop=True, inplace=True)
 
-#Swapping Rows.
-a = d_2019.index[d_2019['State/UT'].str.contains('TOTAL[a-z]*', regex=True)].tolist()
-b = d_2019.index[d_2019['State/UT'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
+## Extraction of Column for Total cybercrimes state wise 
+d_2019_T = pd.DataFrame(d_2019.iloc[:,23])   
+a=(d_2019.iloc[:,1]).tolist()
+d_2019_T.insert(0,'States',a,True)
 
 #Saving updated file.
-d_2019.to_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\d_2019.csv')
+d_2019.to_csv('d_2019.csv')
 
 ################################################---2018---######################################################
 
-#Deleting total states and total UT rows.
-d_2018 = d_2018.drop(39)   #Drops the NaN row
+#Deleting total states, total UT rows and Grand Total.
 d_2018.iloc[9,1] = 'Union Territory'
-d_2018.iloc[38,0] = 'Grand Total(All India)'
-d_2018.iloc[38,1] = 'Grand Total(All India)'
-d_2018.iloc[38,2] = 'Grand Total(All India)'
-I3 = d_2018.index[(d_2018['State/UT']=='Total State(s)') | (d_2018['State/UT']=='Total UT(s)')].tolist()
-print(I3)
-d_2018=d_2018.drop(I3[0],axis=0)
-d_2018=d_2018.drop(I3[1],axis=0)
-d_2018=d_2018.sort_values('State/UT')
+d_2018 = d_2018.drop(39)
+d_2018 = d_2018.drop(29)
+d_2018 = d_2018.drop(37)
+d_2018 = d_2018.drop(38)
 d_2018.reset_index(drop=True, inplace=True)
+
+
+
+##Summary Statistics.
+ss_2018 = (d_2018.describe())
 
 # Combining (Daman & Diu) and (Dadar & Nagar Haveli).
 a2=d_2018.index[(d_2018['State/UT'].str.contains('D&N Haveli[a-z]*', regex=True)) | (d_2018['State/UT'].str.contains('Daman & Diu[a-z]*', regex=True))].tolist()
@@ -120,27 +134,31 @@ d_2018 = d_2018.append(a)
 #Sorting data
 d_2018 = d_2018.sort_values(['Category','State/UT'])
 d_2018.reset_index(drop=True, inplace=True)
+d_2018 = d_2018.drop(['S. No'],axis=1)
 
-#Swapping Rows.
-a = d_2018.index[d_2018['State/UT'].str.contains('Total[a-z]*', regex=True)].tolist()
-b = d_2018.index[d_2018['State/UT'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
+## Extraction of Column for Total cybercrimes state wise 
+d_2018_T = pd.DataFrame(d_2018.iloc[:,23])   
+a=(d_2018.iloc[:,1]).tolist()
+d_2018_T.insert(0,'States',a,True)
 
-d_2018.to_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\d_2018.csv')
+#Saving Updated File.
+d_2018.to_csv('d_2018.csv')
 
 
 ################################################---2017---######################################################
 
-#Deleting total states and total UT rows.
+#Deleting non Required Rows.
 d_2017.iloc[9,1] = 'Union Territory'
-d_2017.iloc[38,0] = 'Grand Total(All India)'
-d_2017.iloc[38,1] = 'Grand Total(All India)'
-d_2017.iloc[38,2] = 'Grand Total(All India)'
-I3 = d_2017.index[(d_2017['State/UT (Col.3)']=='Total State(s)') | (d_2017['State/UT (Col.3)']=='Total UT(s)')].tolist()
-print(I3)
-d_2017=d_2017.drop(I3[0],axis=0)
-d_2017=d_2017.drop(I3[1],axis=0)
-d_2017=d_2017.sort_values('State/UT (Col.3)')
+d_2017 = d_2017.drop(29)
+d_2017 = d_2017.drop(37)
+d_2017 = d_2017.drop(38)
 d_2017.reset_index(drop=True, inplace=True)
+
+
+##Summary Statistics.
+ss_2017 = (d_2017.describe())
+
+
 
 # Combining (Daman & Diu) and (Dadar & Nagar Haveli).
 a2=d_2017.index[(d_2017['State/UT (Col.3)'].str.contains('D&N Haveli[a-z]*', regex=True)) | (d_2017['State/UT (Col.3)'].str.contains('Daman & Diu[a-z]*', regex=True))].tolist()
@@ -167,32 +185,36 @@ a.columns = d_2017.columns
 d_2017 = d_2017.append(a)
 
 
-
 #Sorting data
 d_2017 = d_2017.sort_values(['Category (Col.2)','State/UT (Col.3)'])
 d_2017.reset_index(drop=True, inplace=True)
+d_2017 = d_2017.drop(['S. No (Col.1)'],axis=1)
 
-#Swapping Rows.
-a = d_2017.index[d_2017['State/UT (Col.3)'].str.contains('Total[a-z]*', regex=True)].tolist()
-b = d_2017.index[d_2017['State/UT (Col.3)'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
+## Extraction of Column for Total cybercrimes state wise 
+d_2017_T = pd.DataFrame(d_2017.iloc[:,23])   
+a=(d_2017.iloc[:,1]).tolist()
+d_2017_T.insert(0,'States',a,True)
 
-d_2017.to_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\d_2017.csv')
+
+d_2017.to_csv('d_2017.csv')
 
 
 ###################################################---2016---####################################################
 
-#Deleting total states and total UT rows.
+#Deleting non Required Rows.
 d_2016.iloc[9,1] = 'UT'
-d_2016.iloc[38,0] = 'Grand Total(All India)'
-d_2016.iloc[38,1] = 'Grand Total(All India)'
-d_2016.iloc[38,2] = 'Grand Total(All India)'
-I4 = d_2016.index[(d_2016['State/UT (Col.3)']=='Total (States)') | (d_2016['State/UT (Col.3)']=='Total (UTs)')].tolist()
-print(I4)
-d_2016=d_2016.drop(I4[0],axis=0)
-d_2016=d_2016.drop(I4[1],axis=0)
-d_2016=d_2016.sort_values('State/UT (Col.3)')
+d_2016 = d_2016.drop(29)
+d_2016 = d_2016.drop(37)
+d_2016 = d_2016.drop(38)
 d_2016.reset_index(drop=True, inplace=True)
 
+
+
+##Summary Statistics.
+ss_2016 = (d_2016.describe())
+
+
+#Some Changes for analysis.
 # Combining (Daman & Diu) and (Dadar & Nagar Haveli).
 a2=d_2016.index[(d_2016['State/UT (Col.3)'].str.contains('D&N Haveli[a-z]*', regex=True)) | (d_2016['State/UT (Col.3)'].str.contains('Daman & Diu[a-z]*', regex=True))].tolist()
 print(a2)
@@ -218,39 +240,22 @@ a.columns = d_2016.columns
 d_2016 = d_2016.append(a)
 
 
-
 #Sorting data
 d_2016 = d_2016.sort_values(['Category (Col.2)','State/UT (Col.3)'])
 d_2016.reset_index(drop=True, inplace=True)
+d_2016 = d_2016.drop(['S. No. (Col.1)'],axis=1)
 
-#Swapping Rows.
-a = d_2016.index[d_2016['State/UT (Col.3)'].str.contains('Total[a-z]*', regex=True)].tolist()
-b = d_2016.index[d_2016['State/UT (Col.3)'].str.contains('West Bengal[a-z]*',regex=True)].tolist()
+## Extraction of Column for Total cybercrimes state wise 
+d_2016_T = pd.DataFrame(d_2016.iloc[:,19])   
+a=(d_2016.iloc[:,1]).tolist()
+d_2016_T.insert(0,'States',a,True)
 
-d_2016.to_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\Cyber Crime-20221022T134238Z-001\\Cyber Crime\\Data(Raw)\\d_2016.csv')
-
-
-
-
-
-#Syntax for column names ---> df.columns where df is your dataframe.
-#'Total' Columns/Cplumn for states/UT and overall India.
-T_2016=d_2016[['State/UT (Col.3)','Total (Col.21) = (Items 1 to 20)']]
-T_2016.columns=['states/ut','total']
-T_2017=d_2017[['State/UT (Col.3)','Total (Col.25=Col.1+Col.2+Col.3+Col.4Col.5+Col.6+Col.7+Col.8+Col.9+Col.10+Col.11+Col.12+Col.15+Col.16+Col.17+Col.18+Col.19+Col.20+Col.21+Col.22+Col.23+Col.24']]
-T_2017.columns=['states/ut','total']
-T_2018=d_2018[['State/UT','Total']]
-T_2018.columns=['states/ut','total']
-T_2019=d_2019[['State/UT','Total']]
-T_2019.columns=['states/ut','total']
-T_2020=d_2020[['State/UT (Col. 2)','Total - (Col. 24)']]
-T_2020.columns=['states/ut','total']
-
+d_2016.to_csv('d_2016.csv')
 
 #To check that sequence of states/ut in 'states/ut' column is same
 a=[]
-for i in range(0,37):
-    if ((d_2016.iloc[i,2] == d_2017.iloc[i,2]) & (d_2016.iloc[i,2] == d_2018.iloc[i,2]) & (d_2016.iloc[i,2] == d_2019.iloc[i,1]) & (d_2016.iloc[i,2] == d_2020.iloc[i,2])):
+for i in range(0,36):
+    if ((d_2016.iloc[i,1] == d_2017.iloc[i,1]) & (d_2016.iloc[i,1] == d_2018.iloc[i,1]) & (d_2016.iloc[i,1] == d_2019.iloc[i,1]) & (d_2016.iloc[i,1] == d_2020.iloc[i,1])):
         a.append(True)
     else:
         a.append(False)
@@ -258,8 +263,29 @@ for i in range(0,37):
 
 pd.DataFrame(a)
 
+##Total cybercrimes statewise.
+Total_2016_to_2020 = pd.DataFrame(d_2016_T.iloc[:,1] + d_2017_T.iloc[:,1]  + d_2018_T.iloc[:,1] + d_2019_T.iloc[:,1] + d_2020_T.iloc[:,1])
+a=(d_2016.iloc[:,1]).tolist()
+Total_2016_to_2020.insert(0,'States',a,True)
+print(Total_2016_to_2020)
 
-    
+Total_2016_to_2020.to_csv('Total Cyber crimes in India (Statewise) from 2016 to 2020.csv')
+
+
+Total_2016_to_2020.iloc[:,1].max()
+
+## Plotting.
+x = (Total_2016_to_2020.iloc[:,0]).tolist()
+y = (Total_2016_to_2020.iloc[:,1]).tolist()
+plt.figure(figsize =(5,3),dpi=300 )
+plt.plot(x,y)
+plt.show()
+
+
+
+
+
+
 
 
 
