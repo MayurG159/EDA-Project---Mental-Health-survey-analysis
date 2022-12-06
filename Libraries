@@ -1,0 +1,8 @@
+import re 
+import pandas as pd
+import matplotlib.pyplot as plt 
+import numpy as np
+import statistics as st
+import scipy.stats as stats
+from sklearn.preprocessing import LabelEncoder
+from sklearn.tree import plot_tree
