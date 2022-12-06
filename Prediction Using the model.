@@ -1,0 +1,14 @@
+## Model_Prediction
+a = int(input('what is your gender ?,\n if male-1,female-0,other-2  '))
+b = int(input('In which age group do you fall ?,\n 20-40 = 0, 40 - 60 = 1, 60-80 = 2, 80-100 = 3  '))
+c = int(input('Do you work in USA ?,\n if Yes ->1 , No -> 0 ' ))
+d = int(input('What is Job Role Type?,\n if Technical ->2, non-Technical ->1, both ->0  '))
+e = int(input('Do you Work Remotely ? ,\n if sometimes ->2, Never -> 1, Always - 0  '))
+f = int(input('In Which category does your company size fall ?,\n if 1-5 ->0, 100-500 ->1, 26-100 ->2, 500-1000 ->3, 6-25 -> 4 , more than 1000 ->5  '))
+g = int(input('Do have a family history of Mental Health issues?\n if Yes ->2 No->1 Do not know ->0 '))
+a1 = model.predict([[a,b,c,d,e,f,g]])
+
+if a1[0] == 1:
+    print('You might be diagnosed with Mental Health issue, seek professional help.')
+else :
+    print("\n You won't be diagnosed with Mental Health issue \n but still be aware and seek medical professional if needed.")
