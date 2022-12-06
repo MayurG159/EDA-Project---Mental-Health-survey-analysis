@@ -1,0 +1,125 @@
+## Reading Data
+data = pd.read_csv('.....\\Mental Health Data.csv')         ## KEEP your folder location
+
+## Cleaning
+
+# _1_ Removing age outlier.
+def age_corrector(dataframe,age_varcol_name):
+    a = data[age_varcol_name]
+    age_col = pd.DataFrame(a)
+    for i in range(0,len(a.tolist())):
+        if age_col.iloc[i,0] > 100 :
+            age_col.iloc[i,0] = st.median(a)
+            data[age_varcol_name] = age_col[age_varcol_name]
+        else :
+            pass
+
+# _2_ Renaming the values in the Gender Column (Male,Female and other)
+data['What is your gender?'].replace(to_replace = ['Male', 'male', 'Male ', 'M', 'm',
+       'man', 'Cis male', 'Male.', 'male 9:1 female, roughly', 'Male (cis)', 'Man', 'Sex is male',
+       'cis male', 'Malr', 'Dude', "I'm a man why didn't you make this a drop down question. You should of asked sex? And I would of answered yes please. Seriously how much text can this take? ",
+       'mail', 'M|', 'Male/genderqueer', 'male ',
+       'Cis Male', 'Male (trans, FtM)',
+       'cisdude', 'cis man', 'MALE'], value = 'male', inplace = True)
+data['What is your gender?'].replace(to_replace = ['Female', 'female', 'I identify as female.', 'female ',
+       'Female assigned at birth ', 'F', 'Woman', 'fm', 'f', 'Cis female ', 'Transitioned, M2F',
+       'Genderfluid (born female)', 'Female or Multi-Gender Femme', 'Female ', 'woman', 'female/woman',
+       'Cisgender Female', 'fem', 'Female (props for making this a freeform field, though)',
+       ' Female', 'Cis-woman', 'female-bodied; no feelings about gender',
+       'AFAB'], value = 'female', inplace = True)
+data['What is your gender?'].replace(to_replace = ['Bigender', 'non-binary', 'Other/Transfeminine',
+       'Androgynous', 'Other', 'nb masculine',
+       'none of your business', 'genderqueer', 'Human', 'Genderfluid',
+       'Enby', 'genderqueer woman', 'mtf', 'Queer', 'Agender', 'Fluid',
+       'Nonbinary', 'human', 'Unicorn', 'Genderqueer',
+       'Genderflux demi-girl', 'Transgender woman'], value = 'other', inplace = True)
+
+# _3_ Differentiating job back ground
+def findRoleType(workString):
+    #helper that finds the role type of an individual based on the string of
+    #job descriptions provided
+    roleDict = {"technical":["Front-end Developer","Back-end Developer",
+                         "DevOps/SysAdmin","Designer"],
+            "non-technical":["HR","Support","Sales","Dev Evangelist/Advocate",
+                             "Other","Excecutive Leadership",
+                             "Supervisor/Team Lead","One-person shop"]}
+    #run through role dictionary
+    for technicalRole in roleDict["technical"]:
+        #search to find it in job descriptions
+        if (technicalRole in workString):
+            #now see if they take on an additional non-technical role
+            for nonTechnicalRole in roleDict["non-technical"]:
+                if (nonTechnicalRole in workString): #they do both
+                    return "both"
+            #if we got to this point, they are just technical
+            return "technical"
+    #if we got here, they are non-technical
+    return "non-technical"
+
+a = data['Which of the following best describes your work position?'].tolist()
+technical = []
+non_technical = []
+both = []
+b=[]
+for i in range(0,len(a)):
+    if findRoleType(a[i]) == 'technical':
+        technical.append(a[i])
+        b.append('technical')
+    elif findRoleType(a[i]) == 'non-technical' :
+        non_technical.append(a[i])
+        b.append('non-technical')
+    else :
+        both.append(a[i])
+        b.append('both')
+
+data.insert(31, "Role Type", b, True)
+
+## _4_ Age-Group
+b=[]
+for i in range(0,1433):
+    if data.iloc[i,23] >= 20 and data.iloc[i,23] < 40:
+        b.append('20-40')
+    elif data.iloc[i,23] >= 40 and data.iloc[i,23] < 60:
+        b.append('40-60')
+    elif data.iloc[i,23] >= 60 and data.iloc[i,23] < 80:
+        b.append('60-80')
+    else :
+        b.append('80-100')
+
+data.insert(32,'Age Group',b, True)
+
+
+# _5_ IN USA or Not
+b=[]
+for i in range(0,1433):
+    if data.iloc[i,27] == 'United States of America' :
+        b.append('Yes')
+    else:
+        b.append('No')
+
+data.insert(len(data.columns),'In USA',b,True)
+
+# _6_ Renaming the no of employees column values.
+data['How many employees does your company or organization have?'].replace(to_replace = ['1 to 5', '6 to 25','More than 1000','26-99'], value = [str('1-5'),str('6-25'),str('>1000'),str('26-100')], inplace = True)
+
+
+# _8_ MHD column
+a=data['Have you been diagnosed with a mental health condition by a medical professional?'].tolist()
+data.insert(len(data.columns),'MHD',a, True)
+
+# _9_ Discussion with Employees(DWE)
+data['Has your employer ever formally discussed mental health (for example, as part of a wellness campaign or other official communication)?'].replace(to_replace=["I don't know"],value=['No'],inplace = True)
+a=data['Has your employer ever formally discussed mental health (for example, as part of a wellness campaign or other official communication)?'].tolist()
+data.insert(len(data.columns),'DWE',a, True)
+
+# _10_ Family History
+a=data['Do you have a family history of mental illness?'].tolist()
+data.insert(len(data.columns),'FH',a,True)
+
+# _11_Remotework
+a=data['Do you work remotely?'].tolist()
+data.insert(len(data.columns),'RW',a,True)
+
+
+## Saving Updated file.
+data.to_csv('.....\\Mental health with roletype added.csv')             ## KEEP your folder location
