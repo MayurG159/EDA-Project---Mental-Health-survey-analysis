@@ -1,0 +1,63 @@
+## Creation of inputs and Target Dataframe and Encoding of variables.
+inputs=pd.DataFrame()
+target = pd.DataFrame()
+
+## Encoding of inputs and outputs
+## Inputs
+le_gender = LabelEncoder()
+le_age = LabelEncoder()
+le_work_country = LabelEncoder()
+le_Roletype = LabelEncoder()
+le_Remotework = LabelEncoder()
+le_Companysize = LabelEncoder()
+le_Familyhistory = LabelEncoder()
+
+data['gender_n'] = le_gender.fit_transform(data['What is your gender?'])
+data['age_n'] = le_age.fit_transform(data['Age Group'])
+data['work_country_n'] = le_work_country.fit_transform(data['In USA'])
+data['role_type_n'] = le_Roletype.fit_transform(data['Role Type'])
+data['RW_n']=le_Remotework.fit_transform(data['RW'])
+data['Comp_size_n']=le_Companysize.fit_transform(data['How many employees does your company or organization have?'])
+data['FH_n'] = le_Familyhistory.fit_transform(data['FH'])
+##Outputs
+le_MHD = LabelEncoder()
+
+data['MHD_n'] = le_MHD.fit_transform(data['MHD'])
+
+# __inputs__ Parameters of the model
+a = data['gender_n'].tolist()
+b = data['age_n'].tolist()
+c = data['work_country_n'].tolist()
+d = data['role_type_n'].tolist()
+e = data['RW_n'].tolist()
+f = data['Comp_size_n'].tolist()
+g = data['FH_n'].tolist()
+
+inputs.insert(len(inputs.columns),'gender',a,True)
+inputs.insert(len(inputs.columns),'age',b,True)
+inputs.insert(len(inputs.columns),'In USA',c,True)
+inputs.insert(len(inputs.columns),'Role type',d,True)
+inputs.insert(len(inputs.columns),'Remote Work',e,True)
+inputs.insert(len(inputs.columns),'Company size',f,True)
+inputs.insert(len(inputs.columns),'Family Hist',g,True)
+
+# __Outputs__
+
+a1 = data['MHD_n'].tolist()
+target.insert(len(target.columns),'Mental Health Diagnosed',a1,True)
+
+print(inputs)
+print(target)
+
+### Model Fitting  (Decision Tree model)
+from sklearn import tree
+model = tree.DecisionTreeClassifier()
+model.fit(inputs, target)
+
+## Decision Tree Diagram
+plt.figure(figsize=(25,10),dpi=200)
+a = plot_tree(model)
+
+## Accuracy of the model
+b = model.score(inputs,target)
+print('The accuracy of the model is\n' , b*100, '%')
