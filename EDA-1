@@ -1,0 +1,121 @@
+## To know the number of responses from a specific Country.
+country = data['What country do you live in?'].unique()
+response_count_countrywise = pd.DataFrame(data.pivot_table(index = ['What country do you live in?'], aggfunc ='size'))
+response_count_countrywise.to_csv('...............\\countrywisecount.csv')
+
+## Each state in USA count 
+state = data['What US state or territory do you work in?'].unique()
+work_statewise = pd.DataFrame(data.pivot_table(index = ['What US state or territory do you work in?'], aggfunc ='size'))
+work_statewise.to_csv('...........\\US-Statewisecount_Work.csv')
+
+## To know where most of the people work
+work_country = data['What country do you work in?'].unique()
+work_countrywise = pd.DataFrame(data.pivot_table(index = ['What country do you work in?'], aggfunc ='size'))
+work_countrywise.to_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\archive (1)\\dismantled\\countrywisecount_Work.csv')
+
+## To know where most of the people work
+work_country = data['What country do you work in?'].unique()
+work_countrywise = pd.DataFrame(data.pivot_table(index = ['What country do you work in?'], aggfunc ='size'))
+work_countrywise.to_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\archive (1)\\dismantled\\countrywisecount_Work.csv')
+
+### Agewise Responses.
+agewise_response = pd.DataFrame(data.pivot_table(index = ['What is your age?'], aggfunc ='size'))
+agewise_response.to_csv('C:\\Users\\mayur\\OneDrive\\Desktop\\archive (1)\\dismantled\\agewise_response.csv')
+# plot 
+a=data['What is your age?'].unique()
+b=data.pivot_table(index = ['What is your age?'], aggfunc ='size').tolist()
+plt.figure(figsize=(5,3),dpi=150)
+plt.bar(a,b)
+plt.xlim(0,100)
+plt.ylim(0,100)
+plt.xlabel('Age')
+plt.ylabel('Responses')
+
+### Genderwise Respondents 
+print(data.pivot_table(index = ['What is your gender?'], aggfunc ='size'))
+a = data.pivot_table(index = ['What is your gender?'], aggfunc ='size').tolist()
+b = ['Female', 'Male', 'Other']
+plt.figure(figsize=(5,3),dpi=150)
+c = ['red','blue','orange']
+plt.bar(b,a, color = c)
+plt.show()
+
+## Respondents according to Role_Type.
+## Differentiating respondents w.r.t their backgrounds.
+print(len(technical))
+print(len(non_technical))
+print(len(both))
+# Plot
+a = [len(technical),len(non_technical),len(both)]
+b = ['technical','non-technical','both']
+plt.figure(figsize=(5,3),dpi=150)
+plt.bar(b,a,color=['red','blue','orange'])
+
+### Proportions of USA respondents with (MHD - Diagnosed with Mental Health. (Yes/No))..... (Here you can use crosstab fuction,At that time I wasn't aware of that, So I created my own.)
+USA_YES = 1
+USA_NO = 1
+NoUSA_YES = 1
+NoUSA_NO = 1
+for i in range(0,1433):
+    if data.iloc[i,18] == 'Yes' and data.iloc[i,27] == 'United States of America' :
+        USA_YES += 1
+    elif data.iloc[i,18] == 'No' and data.iloc[i,27] == 'United States of America' :
+        USA_NO += 1
+    elif data.iloc[i,18] == 'Yes' and data.iloc[i,27] != 'United States of America' :
+        NoUSA_YES += 1
+    else:
+        NoUSA_NO += 1
+
+# Proportion
+USA_YES_ = (USA_YES)/(USA_YES+USA_NO)
+USA_NO_  = (USA_NO)/(USA_YES+USA_NO)
+NoUSA_YES_ = (NoUSA_YES)/(NoUSA_YES+NoUSA_NO)
+NoUSA_NO_ = (NoUSA_NO)/(NoUSA_YES+NoUSA_NO)
+
+a=[USA_YES_,USA_NO_,NoUSA_YES_,NoUSA_NO_]
+
+df = {
+  "USA": ['yes','no'],
+  "MHD-yes": [USA_YES_,NoUSA_YES_],   ## MHD - Diagnosed with Mental Health.
+   "MHD-No": [USA_NO_,NoUSA_NO_]
+}
+
+pd.DataFrame(df)
+
+
+## Proportion of genderwise respondents with (MHD - Diagnosed with Mental Health. (Yes/No))
+male_Yes = 1
+male_No = 1
+female_Yes = 1
+female_No = 1
+other_Yes = 1
+other_No = 1
+for i in range(0,1433):
+    if data.iloc[i,18] == 'Yes' and data.iloc[i,24] == 'male' :
+        male_Yes += 1
+    elif data.iloc[i,18] == 'No' and data.iloc[i,24] == 'male' :
+        male_No += 1
+    elif data.iloc[i,18] == 'Yes' and data.iloc[i,24]=='female' :
+        female_Yes += 1
+    elif data.iloc[i,18] == 'No' and data.iloc[i,24]=='female' :
+        female_No += 1
+    elif data.iloc[i,18] == 'Yes' and data.iloc[i,24]=='other' :
+        other_Yes += 1
+    else :
+        other_No += 1
+
+        
+# Proportion
+male_yes_ = male_Yes/(male_Yes+male_No)
+male_no_ =  male_No/(male_Yes+male_No)
+female_yes_ = female_Yes/(female_Yes+female_No)
+female_no_ = female_No /(female_Yes+female_No)
+other_yes_ = other_Yes/(other_Yes+other_No)
+other_no_ = other_No/(other_Yes+other_No)
+
+df={
+    'Gender' : ['male','female','other'],
+    'Yes' : [male_yes_,female_yes_,other_yes_],
+    'No'  : [male_no_,female_no_,other_no_]
+}
+pd.DataFrame(df)
