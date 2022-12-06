@@ -1,0 +1,122 @@
+## Visualizations for variables that might affect MHD
+a = pd.crosstab(data['Are you self-employed?'],data['MHD'])
+a.div(a.sum(1).astype(float), axis=0).plot(kind='bar', stacked=True)
+plt.ylabel('MHD')
+plt.show()
+# No effect.
+
+
+## 2) MHD vs Age_Group
+plt.figure(figsize=(5,3),dpi = 100)
+a = pd.crosstab(data['Age Group'],data['MHD'])
+a.plot(kind='bar')
+plt.ylabel('MHD')
+plt.show()
+## Effect can be obeserved.
+
+## 3) MHD vs Work_Country
+a = pd.crosstab(data['In USA'],data['MHD'])
+a.div(a.sum(1).astype(float), axis=0).plot(kind='bar', stacked=True)
+# Not that drastic effect but will be considered in the model.
+
+## 4) MHD vs Gender
+a = pd.crosstab(data['What is your gender?'],data['MHD'])
+a.plot(kind='bar')
+plt.ylabel('MHD')
+plt.show()
+#Does effect, by observing female and male bars.
+
+## 5) MHD vs Roletype
+a = pd.crosstab(data['Role Type'],data['MHD'])
+a.plot(kind='bar')
+plt.ylabel('MHD')
+plt.show()
+# No effect
+
+## 6) MHD vs Company size
+a = pd.crosstab(data['How many employees does your company or organization have?'],data['MHD'])
+a.plot(kind='bar')
+plt.ylabel('MHD')
+plt.show()
+
+## 7)  MHD vs Dicussion with employees
+a = pd.crosstab(data['DWE'],data['MHD'])
+a.plot(kind='bar')
+plt.ylabel('MHD')
+plt.show()
+
+## 8) MHD vs Family History
+a = pd.crosstab(data['FH'],data['MHD'])
+a.plot(kind='bar')
+plt.ylabel('MHD')
+plt.show()
+
+## 9) MHD vs Remote work
+a = pd.crosstab(data['RW'],data['MHD'])
+a.plot(kind='bar')
+plt.xlabel('Remote work')
+plt.ylabel('MHD')
+plt.show()
+
+## chi-square test for independence.
+Hypothesis is given as H0 : The two categorical variables are independent. vs H1 : The two categorical variables are dependent.
+l.o.s = 5%  
+
+# Test 1)
+#The two categorical Variables are :
+#1)Mental Health Diagonsed by Medical Professional
+#2)Individuals Role type
+d1 = pd.crosstab(data['Role Type'],data['MHD'])
+print(d1)
+observed_values = d1.values
+print('observed_values :-\n',observed_values)
+val = stats.chi2_contingency(d1)
+pvalue=val[1]
+print('p-value is :-\n',pvalue)
+
+if pvalue > 0.05 :
+    print(' The two categorical variables are independent.')
+    print('Do not include in parameters')
+else :
+    print(' The two categorical variables are dependent.')
+    
+# Test 1)
+#The two categorical Variables are :
+#1)Mental Health Diagonsed by Medical Professional
+#2)Remote work
+d1 = pd.crosstab(data['RW'],data['MHD'])
+print(pd.DataFrame(d1))
+observed_values = d1.values
+print('observed_values :-\n',observed_values)
+val = stats.chi2_contingency(d1)
+pvalue=val[1]
+print('p-value is :-\n',pvalue)
+
+if pvalue > 0.05 :
+    print(' The two categorical variables are independent.')
+    print('Do not include in parameters')
+else :
+    print(' The two categorical variables are dependent.')
+    
+# Test 2 
+#The two categorical Variables are :
+#1)Mental Health Diagonsed by Medical Professional
+#2)Family History
+d1 = pd.crosstab(data['FH'],data['MHD'])
+print(d1)
+observed_values = d1.values
+print('observed_values :-\n',observed_values)
+val = stats.chi2_contingency(d1)
+pvalue=val[1]
+print('p-value is :-\n',pvalue)
+
+if pvalue > 0.05 :
+    print(' The two categorical variables are independent.')
+    print('Do not include in parameters of the prediction model.')
+else :
+    print(' The two categorical variables are dependent.')
+    print('We include it in the parameters of the prediction model.')
+
+
+
+
